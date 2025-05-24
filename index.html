@@ -1,0 +1,495 @@
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>दिवाली की शुभकामनाएँ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Charm:wght@700&family=Hind+Siliguri:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            /* Background page ka hai, canvas transparent hoga */
+            background: radial-gradient(ellipse at bottom, #1a0604, #000000); 
+            color: #fff;
+            overflow-x: hidden;
+            overflow-y: auto; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 30px; 
+            padding-bottom: 30px;
+        }
+
+        .container {
+            background-color: rgba(40, 8, 4, 0.88); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 0 30px rgba(255, 165, 0, 0.6), 0 0 15px rgba(255, 215, 0, 0.4) inset;
+            max-width: 580px; 
+            width: 90%;
+            border: 3px solid #ffc107; 
+            position: relative; 
+            z-index: 10; /* Container ka z-index canvas se kam */
+        }
+
+        #diwaliImage {
+            max-width: 75%; 
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 4px solid #ffd700; 
+            box-shadow: 0 0 20px #ffab00; 
+        }
+
+        #greetingMessage {
+            font-family: 'Charm', cursive;
+            font-size: 2.8em; 
+            color: #ffc107;
+            margin-bottom: 12px;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .from-sender {
+            font-family: 'Hind Siliguri', sans-serif;
+            font-size: 1.3em; 
+            color: #ffe0b2;
+            margin-bottom: 30px;
+            display: block;
+            font-weight: bold;
+        }
+
+        .input-group {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+        .input-group label {
+            color: #ffebcc;
+            font-size: 1.15em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            padding: 14px; 
+            font-size: 1.05em;
+            border: 2px solid #ffc966; 
+            border-radius: 10px;
+            width: calc(100% - 32px); 
+            margin-bottom: 15px;
+            background-color: #fff8ef; 
+            color: #333;
+        }
+        input[type="text"]::placeholder {
+            color: #777;
+        }
+
+        .whatsapp-share-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px; 
+            font-size: 1.15em;
+            color: white;
+            background-color: #25D366; 
+            border: none;
+            border-radius: 30px; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.25);
+            animation: pulse 1.8s infinite ease-in-out;
+        }
+        .whatsapp-share-button:hover {
+            background-color: #1DA851; 
+            box-shadow: 0 7px 10px rgba(0,0,0,0.3);
+            transform: translateY(-1px);
+            animation-play-state: paused; 
+        }
+        .whatsapp-share-button svg {
+            width: 26px; 
+            height: 26px;
+            margin-right: 12px;
+            fill: white;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 5px 8px rgba(0,0,0,0.25); }
+            50% { transform: scale(1.03); box-shadow: 0 7px 12px rgba(37, 211, 102, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 5px 8px rgba(0,0,0,0.25); }
+        }
+
+        #generatedLinkContainer {
+            margin-top: 30px; 
+            font-size: 0.95em;
+        }
+        #generatedLinkContainer p {
+            color: #ffebcc;
+            margin-bottom: 8px;
+        }
+        #generatedLinkContainer input[type="text"] { 
+            width: calc(100% - 105px); 
+            margin-right: 10px;
+            padding: 12px;
+            font-size: 1em;
+        }
+        #generatedLinkContainer button { 
+            width: 85px;
+            padding: 12px 5px;
+            font-size: 1em;
+            color: #4a1a0a;
+            background: linear-gradient(145deg, #ffd700, #ffac33);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+         #generatedLinkContainer button:hover {
+            background: linear-gradient(145deg, #ffac33, #ffd700);
+        }
+
+        .animated-greeting-main, .animated-greeting-from {
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+        .animated-greeting-main {
+            animation: festivePop 1.5s ease-out 0.5s forwards;
+        }
+        .animated-greeting-from {
+            animation: fadeInFromBottom 1.5s ease-out 1s forwards;
+        }
+
+        @keyframes festivePop {
+            0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+            60% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes fadeInFromBottom {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        
+        #fireworksCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20; /* Canvas container ke upar */
+            pointer-events: none; /* Canvas clicks ko pass through karega */
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            font-size: 0.9em;
+            color: #ffc966;
+            border-top: 1px solid #6f3322;
+            width: 85%;
+            max-width: 550px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="fireworksCanvas"></canvas> 
+
+    <div class="container">
+        <img id="diwaliImage" src="laxmi.gif" alt="Happy Diwali Animation">
+
+        <h1 id="greetingMessage"><span id="mainGreeting"></span></h1>
+        <span id="fromSenderMessage" class="from-sender"></span>
+
+        <div class="input-group">
+            <label for="senderNameInput">आपका शुभ नाम:</label>
+            <input type="text" id="senderNameInput" placeholder="यहाँ अपना नाम लिखें">
+        </div>
+
+        <button class="whatsapp-share-button" onclick="generateAndShareLink()">
+            <svg viewBox="0 0 24 24">
+                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.33 3.43 16.79L2.05 22L7.32 20.63C8.72 21.33 10.31 21.7 12.04 21.7C17.5 21.7 21.95 17.25 21.95 11.79C21.95 6.33 17.5 2 12.04 2ZM12.04 20C10.57 20 9.18 19.65 7.97 19L7.64 18.81L4.62 19.6L5.44 16.7L5.23 16.36C4.63 15.06 4.31 13.61 4.31 12.03C4.31 7.61 7.81 4.11 12.22 4.11C14.31 4.11 16.19 4.93 17.61 6.35C19.03 7.77 19.85 9.65 19.85 11.74C19.85 16.16 16.35 19.88 12.04 20ZM16.56 14.45C16.25 14.29 15.13 13.74 14.88 13.65C14.63 13.55 14.45 13.5 14.28 13.75C14.11 14 13.63 14.58 13.47 14.76C13.31 14.93 13.15 14.96 12.84 14.8C12.53 14.65 11.71 14.35 10.73 13.49C10.02 12.86 9.52 12.06 9.39 11.81C9.27 11.56 9.39 11.44 9.51 11.32C9.62 11.21 9.77 11.03 9.91 10.87C10.04 10.72 10.09 10.61 10.22 10.38C10.34 10.15 10.29 10 10.19 9.85C10.09 9.71 9.61 8.5 9.41 8.02C9.22 7.54 9.03 7.6 8.89 7.6H8.47C8.24 7.6 7.95 7.68 7.71 7.93C7.48 8.17 6.91 8.69 6.91 9.81C6.91 10.93 7.74 11.99 7.86 12.14C7.99 12.29 9.61 14.81 12.08 15.79C12.63 16.02 13.04 16.18 13.36 16.28C13.9 16.42 14.35 16.38 14.65 16.32C15 16.24 16.01 15.68 16.22 15.12C16.42 14.56 16.42 14.06 16.36 13.95L16.56 14.45Z"/>
+            </svg>
+            WhatsApp पर शेयर करें
+        </button>
+
+        <div id="generatedLinkContainer" style="display:none;">
+            <p>या यह लिंक कॉपी करके शेयर करें:</p>
+            <input type="text" id="generatedLink" readonly>
+            <button onclick="copyLink()">कॉपी</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>आपको और आपके परिवार को दीपावली की हार्दिक शुभकामनाएँ!</p>
+    </div>
+
+    <script>
+        // --- Firework Code STARTS ---
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+        let fireworks = [];
+        let particles = [];
+
+        function setupCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        setupCanvas();
+        window.addEventListener('resize', setupCanvas);
+
+        class Firework {
+            constructor(x, y, targetX, targetY, color) {
+                this.x = x; this.y = y; this.targetX = targetX; this.targetY = targetY;
+                this.color = color; 
+                this.speed = Math.random() * 2 + 3.5; 
+                this.angle = Math.atan2(targetY - y, targetX - x);
+                this.distanceToTarget = Math.sqrt((targetX - x)**2 + (targetY - y)**2);
+                this.distanceTraveled = 0; 
+                this.coordinates = []; 
+                this.coordinateCount = 5; 
+                this.headSize = Math.random() * 2 + 3; 
+                
+                while (this.coordinateCount--) { 
+                    this.coordinates.push([this.x, this.y]); 
+                }
+            }
+
+            update(index) {
+                this.coordinates.pop(); 
+                this.coordinates.unshift([this.x, this.y]);
+                
+                if (this.distanceTraveled >= this.distanceToTarget) {
+                    createParticles(this.targetX, this.targetY, this.color);
+                    fireworks.splice(index, 1);
+                } else {
+                    this.x += Math.cos(this.angle) * this.speed;
+                    this.y += Math.sin(this.angle) * this.speed;
+                    this.distanceTraveled = Math.sqrt( (this.x - this.coordinates[this.coordinates.length-1][0])**2 + 
+                                                       (this.y - this.coordinates[this.coordinates.length-1][1])**2 ) 
+                                             + this.distanceTraveled; 
+                }
+                 this.speed *= 0.99; 
+                 if (this.speed < 1) this.speed = 1; 
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                for (let i = this.coordinates.length - 2; i >= 0; i--) {
+                    ctx.lineTo(this.coordinates[i][0], this.coordinates[i][1]);
+                }
+                ctx.lineTo(this.x, this.y); 
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = Math.max(1, this.headSize * 0.5); 
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.headSize, 0, Math.PI * 2, false);
+                ctx.fillStyle = '#FFFFFF'; 
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.headSize * 0.6, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.size = Math.random() * 2.5 + 1.5; 
+                this.speed = Math.random() * 8 + 3; 
+                this.angle = Math.random() * Math.PI * 2; 
+                this.gravity = 0.08; 
+                this.alpha = 1;
+                this.decay = Math.random() * 0.010 + 0.010; 
+                this.coordinates = []; 
+                this.coordinateCount = 5;
+                 while (this.coordinateCount--) { this.coordinates.push([this.x, this.y]); }
+            }
+            update(index) {
+                 this.coordinates.pop(); this.coordinates.unshift([this.x, this.y]);
+                this.speed *= 0.96; 
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed + this.gravity; 
+                this.alpha -= this.decay;
+                if (this.alpha <= this.decay) { particles.splice(index, 1); }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                ctx.lineTo(this.x, this.y);
+                ctx.strokeStyle = `rgba(${hexToRgb(this.color).r}, ${hexToRgb(this.color).g}, ${hexToRgb(this.color).b}, ${this.alpha})`;
+                ctx.lineWidth = this.size; 
+                ctx.lineCap = 'round'; 
+                ctx.stroke();
+            }
+        }
+        
+        function hexToRgb(hex) {
+            let r = 0, g = 0, b = 0;
+            if (hex.length == 4) { r = parseInt(hex[1] + hex[1], 16); g = parseInt(hex[2] + hex[2], 16); b = parseInt(hex[3] + hex[3], 16);
+            } else if (hex.length == 7) { r = parseInt(hex[1] + hex[2], 16); g = parseInt(hex[3] + hex[4], 16); b = parseInt(hex[5] + hex[6], 16); }
+            return { r, g, b };
+        }
+
+        function createParticles(x, y, color) {
+            let particleCount = 150; 
+            while (particleCount--) { particles.push(new Particle(x, y, color)); }
+        }
+        
+        const fireworkColors = ['#FFD700', '#FF8C00', '#FF4500', '#FFFFFF', '#FF00FF', '#ADFF2F', '#00FFFF', '#FA8072', '#FF69B4']; 
+
+        function launchFirework() {
+            const numToLaunch = Math.random() > 0.6 ? (Math.random() > 0.7 ? 4 : 3) : 2; 
+
+            for (let i = 0; i < numToLaunch; i++) {
+                setTimeout(() => {
+                    if (fireworks.length < 35) { 
+                        const startX = Math.random() * canvas.width * 0.7 + canvas.width * 0.15; 
+                        const startY = canvas.height + 10; 
+                        const targetX = Math.random() * (canvas.width * 0.8) + (canvas.width * 0.1); 
+                        const targetY = Math.random() * (canvas.height * 0.4) + (canvas.height * 0.1) ; 
+                        const color = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+                        fireworks.push(new Firework(startX, startY, targetX, targetY, color));
+                    }
+                }, i * (100 + Math.random() * 100) ); 
+            }
+        }
+
+        function animateFireworks() {
+            requestAnimationFrame(animateFireworks);
+            
+            // Canvas ko transparently clear karein
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            // Agar trails chahiye toh:
+            // ctx.fillStyle = 'rgba(0, 0, 0, 0.03)'; // Bahut halka alpha
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            let i = fireworks.length;
+            while(i--) {
+                fireworks[i].update(i);
+                fireworks[i].draw();
+            }
+            
+            let j = particles.length;
+            while(j--) {
+                particles[j].update(j);
+                particles[j].draw();
+            }
+        }
+        // --- Firework Code ENDS ---
+
+
+        // --- Main Page Logic STARTS ---
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const senderName = urlParams.get('sender');
+            const mainGreetingElement = document.getElementById('mainGreeting');
+            const fromSenderElement = document.getElementById('fromSenderMessage');
+
+            if (senderName) {
+                const decodedSenderName = decodeURIComponent(senderName.replace(/\+/g, ' '));
+                mainGreetingElement.textContent = `शुभ दीपावली!`;
+                fromSenderElement.textContent = `${decodedSenderName} की ओर से`;
+                mainGreetingElement.classList.add('animated-greeting-main');
+                fromSenderElement.classList.add('animated-greeting-from');
+            } else {
+                mainGreetingElement.textContent = "दीपों का त्यौहार";
+                fromSenderElement.textContent = "आपको और आपके परिवार को दिवाली की शुभकामनाएँ!";
+                mainGreetingElement.classList.add('animated-greeting-main');
+                fromSenderElement.classList.add('animated-greeting-from');
+            }
+
+            animateFireworks();
+            setTimeout(() => launchFirework(), 200); 
+            setInterval(launchFirework, 800 + Math.random() * 700); 
+
+            adjustImagePathForGitHubPages();
+        };
+
+        async function generateAndShareLink() {
+            const nameInput = document.getElementById('senderNameInput');
+            const senderName = nameInput.value.trim();
+
+            if (senderName === "") {
+                alert("कृपया अपना नाम दर्ज करें!");
+                return;
+            }
+
+            const baseUrl = window.location.href.split('?')[0];
+            const encodedSenderName = encodeURIComponent(senderName);
+            const newLink = `${baseUrl}?sender=${encodedSenderName}`;
+
+            const shareData = {
+                title: 'दीपावली की शुभकामनाएँ!',
+                text: `${senderName} की ओर से दीपावली की हार्दिक शुभकामनाएँ! इस विशेष संदेश को देखने के लिए लिंक पर क्लिक करें:`,
+                url: newLink
+            };
+
+            const generatedLinkInput = document.getElementById('generatedLink');
+            const generatedLinkContainer = document.getElementById('generatedLinkContainer');
+            generatedLinkInput.value = newLink;
+            generatedLinkContainer.style.display = 'block';
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    generatedLinkInput.focus();
+                    generatedLinkInput.select();
+                }
+            } else {
+                generatedLinkInput.focus();
+                generatedLinkInput.select();
+            }
+        }
+
+        function copyLink() {
+            const linkInput = document.getElementById('generatedLink');
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); 
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(linkInput.value).then(() => {
+                        alert('लिंक क्लिपबोर्ड पर कॉपी हो गया है!');
+                    }).catch(err => { fallbackCopyTextToClipboard(linkInput.value); });
+                } else { fallbackCopyTextToClipboard(linkInput.value); }
+            } catch (err) { alert('लिंक कॉपी करने में त्रुटि हुई।'); }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus(); textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) alert('लिंक क्लिपबोर्ड पर कॉपी हो गया है (fallback)!');
+                else alert('लिंक कॉपी नहीं हो सका।');
+            } catch (err) { alert('लिंक कॉपी नहीं हो सका।'); }
+            document.body.removeChild(textArea);
+        }
+
+        function adjustImagePathForGitHubPages() {
+            if (window.location.hostname.endsWith('github.io')) {
+                const imageElement = document.getElementById('diwaliImage');
+                let currentSrc = imageElement.getAttribute('src');
+                if (!currentSrc.startsWith('http') && !currentSrc.startsWith('/')) {
+                    const pathParts = window.location.pathname.split('/');
+                    if (pathParts.length > 1 && pathParts[1] !== "" && pathParts[1] !== "index.html") {
+                        const repoName = pathParts[1];
+                        if (!currentSrc.toLowerCase().includes(`/${repoName.toLowerCase()}/`)) {
+                             imageElement.src = `/${repoName}/${currentSrc}`;
+                        }
+                    }
+                }
+            }
+        }
+        // --- Main Page Logic ENDS ---
+    </script>
+</body>
+</html>
